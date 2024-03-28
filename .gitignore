@@ -1,2 +1,4 @@
 build/
 .cache/
+server/node_modules/
+server/uploads/
