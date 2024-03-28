@@ -2,6 +2,7 @@
 
 #include <string>
 #include <tuple>
+#include <iostream>
 
 #include <unistd.h>
 #include <CoreFoundation/CoreFoundation.h>
@@ -19,3 +20,5 @@ std::string GetDeviceInfo();
 std::tuple<std::string, std::string> GetDeviceIP();
 
 char* GetHostName();
+
+void ReloadLaunchConfiguration();

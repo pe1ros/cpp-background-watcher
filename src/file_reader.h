@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <tuple>
+#include <cstdlib>
 
 #include "system_profiler.h"
 

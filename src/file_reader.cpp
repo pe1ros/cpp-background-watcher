@@ -1,4 +1,5 @@
 #include "file_reader.h"
+#include <fstream>
 
 using namespace std;
 
@@ -40,11 +41,29 @@ void WriteToOutputFile(const std::wstring& key, const std::string& info, const s
     }
 }
 
+// TODO: change !!!
 void CreateLaunchAgentFile(char* path) {
     string file_path = string(getenv("HOME")) + "/Library/LaunchAgents/com.background.system.watcher.plist";
-    string program_name  = "main";
+    string program_name  = "CppBackgroundWatcher";
+    std::string destination_file_path = string(getenv("HOME")) + "/Library/LaunchAgents";
 
     if (!FileExists(file_path)) {
+        // system(string("chmod 777 /Library/LaunchDaemons/").c_str());
+        string copy_command = "sudo cp "
+                                + static_cast<string>(path)
+                                + "/CppBackgroundWatcher "
+                                + destination_file_path
+                                + "/CppBackgroundWatcher";
+        int copy_command_result = system(copy_command.c_str());
+        if (copy_command_result != 0) {
+            std::cerr << "Ошибка при копировании файла." << std::endl;
+        }
+        // string grant_command = "sudo chmod 777 /Library/LaunchDaemons/com.background.system.watcher.plist";
+        // int grant_cred_result = system(grant_command.c_str());
+        // if (grant_cred_result != 0) {
+        //     std::cerr << "Ошибка прав доступа к файлу." << std::endl;
+        // }
+
         ofstream file(file_path);
         
         if (file.is_open()) {
@@ -52,11 +71,11 @@ void CreateLaunchAgentFile(char* path) {
             file << "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">" << endl;
             file << "<plist version=\"1.0\">" << endl;
             file << "<dict>" << endl;
-            file << "    <key>BackgroundSystemWatcher</key>" << endl;
+            file << "    <key>Label</key>" << endl;
             file << "    <string>com.background.system.watcher</string>" << endl;
             file << "    <key>ProgramArguments</key>" << endl;
             file << "    <array>" << endl;
-            file << "        <string>" << path << '/' << program_name << "</string>" << endl;
+            file << "        <string>" << destination_file_path << '/' << program_name << "</string>" << endl;
             file << "    </array>" << endl;
             file << "    <key>RunAtLoad</key>" << endl;
             file << "    <true/>" << endl;
@@ -65,6 +84,7 @@ void CreateLaunchAgentFile(char* path) {
             file.close();
 
             cout << "Файл успешно создан: " << file_path << endl;
+            ReloadLaunchConfiguration();
         } else {
             cerr << "Не удалось открыть файл для записи." << endl;
         }
