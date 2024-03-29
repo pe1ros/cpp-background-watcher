@@ -7,7 +7,6 @@
 #include <unistd.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <IOKit/IOKitLib.h>
-// #include <netinet/in.h>
 #include <sys/socket.h>
 #include <ifaddrs.h>
 #include <arpa/inet.h>

